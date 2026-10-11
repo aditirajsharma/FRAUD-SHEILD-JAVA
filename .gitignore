@@ -2,3 +2,8 @@ target/
 .idea/
 *.iml
 .vscode/
+data/
+node_modules/
+*.log
+
+data/
