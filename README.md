@@ -1,4 +1,4 @@
-🌐 Live Website: https://detectionfruad.netlify.app
+🌐 Live Website: https://detectionfruad.netlify.app/
 # FraudShield — AI-Powered Fraud Detection & Security Intelligence System
 
 An enterprise-grade fraud detection, security monitoring, and financial safety platform built with **Spring Boot 3**, **Java 17**, **Thymeleaf**, **Raw JDBC & JPA dual data layers**, **Jakarta Servlets & Filters**, and **Multithreaded Ingestion Pipelines**.
