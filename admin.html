@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Command Center — FraudShield</title>
+  <meta name="description" content="AI-Powered Real-Time Fraud Detection System - Enterprise Admin Command Center"/>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html {
+      font-size: 100%;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    :root {
+      --bg: #FBFAF7;
+      --surface: #FFFFFF;
+      --surface-subtle: #F6F5F0;
+      --border: #E8E6E1;
+      --border-subtle: #F0EEE9;
+      --ink: #17181C;
+      --muted: #6B6B70;
+      --label: #8A8A90;
+      --accent: #C0302B;
+      --accent-soft: rgba(192, 48, 43, 0.08);
+      --accent-border: rgba(192, 48, 43, 0.25);
+      --positive: #1E7B3A;
+      --positive-soft: rgba(30, 123, 58, 0.08);
+      --negative: #C0302B;
+      --negative-soft: rgba(192, 48, 43, 0.08);
+      --secondary: #2F6FB5;
+      --secondary-soft: rgba(47, 111, 181, 0.08);
+      --warning: #D98A00;
+      --warning-soft: rgba(217, 138, 0, 0.12);
+
+      --sidebar-width: 264px;
+      --sidebar-collapsed-width: 76px;
+      --sidebar-row-height: 48px;
+    }
+    body.dark-mode {
+      --bg: #121214;
+      --surface: #18181C;
+      --surface-subtle: #202026;
+      --border: #2A2A30;
+      --border-subtle: #222228;
+      --ink: #F0F0F3;
+      --muted: #8E8E98;
+      --label: #72727C;
+      --accent: #E04D47;
+      --accent-soft: rgba(224, 77, 71, 0.15);
+      --positive: #2BB356;
+      --positive-soft: rgba(43, 179, 86, 0.15);
+      --negative: #E04D47;
+      --negative-soft: rgba(224, 77, 71, 0.15);
+      --secondary: #4D8FE0;
+      --secondary-soft: rgba(77, 143, 224, 0.15);
+      --warning: #F5A623;
+      --warning-soft: rgba(245, 166, 35, 0.15);
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .fs-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      box-shadow: 0 1px 2px rgba(23, 24, 28, 0.04);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+      min-width: 0;
+    }
+    .fs-kpi-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      min-width: 0;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+    .fs-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--label);
+    }
+    .fs-kpi-val {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn-primary {
+      background-color: var(--ink);
+      color: var(--bg);
+      border-radius: 9999px;
+      font-weight: 600;
+      min-height: 44px;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.9375rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-secondary {
+      background-color: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-weight: 500;
+      min-height: 44px;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.9375rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-secondary:hover { background-color: var(--surface-subtle); }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .badge-approved { background-color: var(--positive-soft); color: var(--positive); border: 1px solid rgba(30, 123, 58, 0.2); }
+    .badge-flagged, .badge-open { background-color: var(--warning-soft); color: var(--warning); border: 1px solid rgba(217, 138, 0, 0.25); }
+    .badge-blocked, .badge-confirmed { background-color: var(--negative-soft); color: var(--negative); border: 1px solid rgba(192, 48, 43, 0.25); }
+
+    .app-sidebar {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      background-color: var(--surface);
+      border-right: 1px solid var(--border);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .app-sidebar.collapsed { width: var(--sidebar-collapsed-width); }
+    .app-main-wrapper {
+      margin-left: var(--sidebar-width);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: margin-left 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      min-width: 0;
+    }
+    body.sidebar-is-collapsed .app-main-wrapper { margin-left: var(--sidebar-collapsed-width); }
+
+    .sidebar-toggle-btn {
+      position: absolute;
+      right: -14px;
+      top: 24px;
+      width: 28px;
+      height: 28px;
+      border-radius: 9999px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      z-index: 60;
+    }
+
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: var(--sidebar-row-height);
+      padding: 0 1rem;
+      margin: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: background-color 0.15s ease, color 0.15s ease;
+      position: relative;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .sidebar-nav-item:hover { background-color: var(--surface-subtle); color: var(--ink); }
+    .sidebar-nav-item.active { background-color: var(--accent-soft); color: var(--ink); font-weight: 700; }
+    .sidebar-nav-item.active::before {
+      content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; background-color: var(--accent); border-radius: 9999px;
+    }
+    .sidebar-nav-item.active i { color: var(--accent); }
+
+    .app-sidebar.collapsed .sidebar-label,
+    .app-sidebar.collapsed .sidebar-brand-text,
+    .app-sidebar.collapsed .sidebar-user-text,
+    .app-sidebar.collapsed .sidebar-group-title {
+      opacity: 0; display: none !important;
+    }
+    .app-sidebar.collapsed .sidebar-header,
+    .app-sidebar.collapsed .sidebar-brand,
+    .app-sidebar.collapsed .sidebar-nav-item {
+      justify-content: center; padding: 0; margin: 0.25rem 0.5rem;
+    }
+
+    @media (max-width: 1023px) {
+      .app-sidebar { transform: translateX(-100%); width: 280px !important; }
+      .app-sidebar.drawer-open { transform: translateX(0); }
+      .app-main-wrapper { margin-left: 0 !important; }
+    }
+
+    /* Toasts */
+    #toast-container { position: fixed; top: 1.25rem; right: 1.25rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+    .fs-toast {
+      background-color: var(--surface); color: var(--ink); border: 1px solid var(--border);
+      border-radius: 0.875rem; padding: 0.875rem 1.25rem; min-width: 320px; box-shadow: 0 12px 36px -4px rgba(0,0,0,0.1);
+      display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem;
+    }
+
+    .thin-progress-track {
+      background-color: var(--surface-subtle); border: 1px solid var(--border); border-radius: 9999px; height: 7px; overflow: hidden;
+    }
+    .thin-progress-bar { background-color: var(--accent); height: 100%; border-radius: 9999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+<div id="toast-container" aria-live="polite"></div>
+<div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden lg:hidden" onclick="closeSidebarDrawer()"></div>
+
+<!-- Admin Sidebar -->
+<aside id="app-sidebar" class="app-sidebar" role="navigation">
+  <button id="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" class="sidebar-toggle-btn hidden lg:flex" title="Toggle sidebar">
+    <i id="collapse-chevron" data-lucide="chevrons-left" class="w-3.5 h-3.5"></i>
+  </button>
+
+  <div>
+    <div class="sidebar-header flex items-center justify-between px-5 py-5 border-b border-[var(--border)] min-h-[72px]">
+      <a href="admin.html" class="sidebar-brand flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-[var(--accent)] flex items-center justify-center text-white shadow-sm flex-shrink-0">
+          <i data-lucide="shield" class="w-5 h-5"></i>
+        </div>
+        <div class="sidebar-brand-text flex flex-col min-w-0">
+          <span class="font-bold text-lg tracking-tight text-[var(--ink)] leading-none">FraudShield</span>
+          <span class="text-[11px] font-semibold text-[var(--accent)] uppercase tracking-wider mt-1.5">Admin Console</span>
+        </div>
+      </a>
+      <button onclick="closeSidebarDrawer()" class="lg:hidden p-1.5 rounded-lg text-[var(--muted)] hover:text-[var(--ink)]">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <nav class="py-4 space-y-1">
+      <div class="sidebar-group px-3 mb-2">
+        <div class="sidebar-group-title fs-eyebrow px-3 mb-2 mt-2">Operations</div>
+        <div class="space-y-1">
+          <a href="#dashboard" id="admin-nav-dashboard" onclick="switchAdminTab('dashboard')" class="sidebar-nav-item active">
+            <i data-lucide="layout-dashboard" class="w-[22px] h-[22px] flex-shrink-0"></i>
+            <span class="sidebar-label">Dashboard</span>
+          </a>
+          <a href="#reports" id="admin-nav-reports" onclick="switchAdminTab('reports')" class="sidebar-nav-item flex items-center justify-between">
+            <div class="flex items-center gap-3 min-w-0">
+              <i data-lucide="file-bar-chart" class="w-[22px] h-[22px] flex-shrink-0"></i>
+              <span class="sidebar-label">Reports & Cases</span>
+            </div>
+            <span class="sidebar-badge px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--accent)] text-white" id="admin-open-cases-badge">3</span>
+          </a>
+          <a href="#algorithms" id="admin-nav-algorithms" onclick="switchAdminTab('algorithms')" class="sidebar-nav-item">
+            <i data-lucide="cpu" class="w-[22px] h-[22px] flex-shrink-0"></i>
+            <span class="sidebar-label">Algorithms</span>
+          </a>
+          <a href="#config" id="admin-nav-config" onclick="switchAdminTab('config')" class="sidebar-nav-item">
+            <i data-lucide="sliders-horizontal" class="w-[22px] h-[22px] flex-shrink-0"></i>
+            <span class="sidebar-label">Configuration</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <div class="p-3 border-t border-[var(--border)]">
+    <div class="p-2.5 rounded-xl bg-[var(--surface-subtle)] border border-[var(--border)] flex items-center gap-3 mb-2">
+      <div class="w-10 h-10 rounded-full bg-[var(--ink)] text-[var(--bg)] font-bold text-sm flex items-center justify-center flex-shrink-0">
+        <span>A</span>
+      </div>
+      <div class="sidebar-user-text min-w-0 flex-1">
+        <p class="font-bold text-sm text-[var(--ink)] truncate">Security Admin</p>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <p class="text-xs text-[var(--muted)] truncate">admin@fraud.com</p>
+          <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-semibold bg-[var(--accent-soft)] text-[var(--accent)] border border-[var(--accent-border)]">ADMIN</span>
+        </div>
+      </div>
+    </div>
+
+    <a href="login.html?logout=true" class="flex items-center justify-center gap-2 h-10 px-3 rounded-xl text-xs font-semibold text-[var(--muted)] hover:text-[var(--negative)] hover:bg-[var(--negative-soft)] transition">
+      <i data-lucide="log-out" class="w-4 h-4 flex-shrink-0"></i>
+      <span class="sidebar-label text-xs font-semibold">Sign Out</span>
+    </a>
+  </div>
+</aside>
+
+<!-- Main Wrapper -->
+<div class="app-main-wrapper flex-1 flex flex-col min-w-0">
+  <header class="sticky top-0 z-30 bg-[var(--surface)]/90 backdrop-blur-md border-b border-[var(--border)] h-[72px] flex items-center transition-colors">
+    <div class="w-full px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5 min-w-0">
+        <button onclick="openSidebarDrawer()" class="lg:hidden p-2 rounded-xl border border-[var(--border)] bg-[var(--surface-subtle)] text-[var(--muted)]">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h1 id="admin-topbar-title" class="text-2xl font-bold tracking-tight text-[var(--ink)]">Admin Operations Console</h1>
+          <p class="text-xs text-[var(--muted)] hidden sm:block">Cross-account velocity tracking & anomaly scoring</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="btn-secondary text-xs py-2 px-4">
+          <i data-lucide="user" class="w-4 h-4 text-[var(--muted)]"></i>
+          <span>Switch to User View</span>
+        </a>
+        <button onclick="toggleTheme()" class="w-11 h-11 rounded-full border border-[var(--border)] flex items-center justify-center text-[var(--muted)] hover:text-[var(--ink)]">
+          <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-6 sm:py-8">
+
+    <!-- 1. TAB: DASHBOARD -->
+    <div id="admin-tab-dashboard" class="space-y-6">
+      <!-- Hero -->
+      <div class="fs-card p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="fs-eyebrow text-xs">Enterprise Fraud Operations</span>
+              <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[var(--positive)] bg-[var(--positive-soft)] px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-[var(--positive)] animate-pulse"></span>
+                Engine Active (v1.1)
+              </span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-[var(--ink)]">System Anomaly & Threat Detection</h2>
+            <p class="text-sm text-[var(--muted)] mt-1">Multi-factor transaction scoring across all platform cardholders.</p>
+          </div>
+          <div class="flex gap-2.5">
+            <button onclick="switchAdminTab('reports')" class="btn-primary text-xs">View Investigation Queue</button>
+            <button onclick="switchAdminTab('algorithms')" class="btn-secondary text-xs">Model Tuning</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6">
+        <div class="fs-kpi-card flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="fs-eyebrow">Total Transactions</span>
+            <i data-lucide="activity" class="w-5 h-5 text-[var(--muted)]"></i>
+          </div>
+          <div class="fs-kpi-val text-[var(--ink)]">1,248</div>
+          <p class="text-xs text-[var(--positive)] mt-1 font-medium">+1,226 approved & safe</p>
+        </div>
+
+        <div class="fs-kpi-card flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="fs-eyebrow">Fraud Flagged</span>
+            <i data-lucide="shield-alert" class="w-5 h-5 text-[var(--accent)]"></i>
+          </div>
+          <div class="fs-kpi-val text-[var(--accent)]">22</div>
+          <p class="text-xs text-[var(--accent)] mt-1 font-medium">3 pending triage</p>
+        </div>
+
+        <div class="fs-kpi-card flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="fs-eyebrow">Detection Precision</span>
+            <i data-lucide="target" class="w-5 h-5 text-[var(--positive)]"></i>
+          </div>
+          <div class="fs-kpi-val text-[var(--positive)]">96.8%</div>
+          <p class="text-xs text-[var(--muted)] mt-1 font-medium">Based on confirmed reviews</p>
+        </div>
+
+        <div class="fs-kpi-card flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <span class="fs-eyebrow">Anomaly Rate</span>
+            <i data-lucide="flag" class="w-5 h-5 text-[var(--warning)]"></i>
+          </div>
+          <div class="fs-kpi-val text-[var(--warning)]">1.76%</div>
+          <p class="text-xs text-[var(--muted)] mt-1 font-medium">Within safe industry baseline</p>
+        </div>
+      </div>
+
+      <!-- Analytics Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Monthly Trend (8 cols) -->
+        <div class="lg:col-span-8 fs-card">
+          <div class="flex items-center justify-between pb-3 border-b border-[var(--border)] mb-4">
+            <div>
+              <span class="fs-eyebrow">Monthly Volume</span>
+              <h3 class="text-base font-bold text-[var(--ink)] mt-0.5">Fraud vs Approved Volumes</h3>
+            </div>
+            <span class="text-xs font-mono text-[var(--muted)]">6 Months</span>
+          </div>
+          <div class="h-72">
+            <canvas id="adminTrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Anomaly Categories Donut (4 cols) -->
+        <div class="lg:col-span-4 fs-card">
+          <div class="pb-3 border-b border-[var(--border)] mb-4">
+            <span class="fs-eyebrow">Anomalies</span>
+            <h3 class="text-base font-bold text-[var(--ink)] mt-0.5">Threat Breakdown</h3>
+          </div>
+          <div class="h-72 flex items-center justify-center">
+            <canvas id="adminDonutChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. TAB: REPORTS & CASES -->
+    <div id="admin-tab-reports" class="space-y-6 hidden">
+      <div class="fs-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <span class="fs-eyebrow">Audit & Investigation</span>
+          <h2 class="text-2xl font-bold text-[var(--ink)] mt-0.5">Fraud Detection Reports</h2>
+          <p class="text-xs text-[var(--muted)] mt-1">Review flagged anomaly payloads and resolve case disputes.</p>
+        </div>
+        <button onclick="exportReportsCsv()" class="btn-secondary text-xs py-2 px-4">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Export CSV</span>
+        </button>
+      </div>
+
+      <!-- Investigation Queue Table -->
+      <div class="fs-card p-0 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[var(--surface-subtle)] text-[var(--label)] uppercase font-semibold text-[10px] tracking-wider border-b border-[var(--border)]">
+              <tr>
+                <th class="py-3.5 px-4 sm:px-6">Case ID</th>
+                <th class="py-3.5 px-4">Cardholder</th>
+                <th class="py-3.5 px-4">Merchant</th>
+                <th class="py-3.5 px-4 text-right">Amount (INR)</th>
+                <th class="py-3.5 px-4">AI Score</th>
+                <th class="py-3.5 px-4">Status</th>
+                <th class="py-3.5 px-4 sm:px-6 text-right">Triage Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--border-subtle)]" id="admin-cases-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. TAB: ALGORITHMS -->
+    <div id="admin-tab-algorithms" class="space-y-6 hidden">
+      <div class="fs-card p-6">
+        <span class="fs-eyebrow">Machine Learning Operations</span>
+        <h2 class="text-2xl font-bold text-[var(--ink)] mt-0.5">Algorithm Versioning & Tuning</h2>
+        <p class="text-xs text-[var(--muted)] mt-1">Deploy feedback-tuned anomaly models based on confirmed fraud feedback.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 fs-card">
+          <h3 class="text-sm font-bold text-[var(--ink)] mb-4">Model Accuracy Benchmark</h3>
+          <div class="h-64">
+            <canvas id="algoChart"></canvas>
+          </div>
+        </div>
+
+        <div class="fs-card space-y-4">
+          <h3 class="text-sm font-bold text-[var(--ink)] pb-2 border-b border-[var(--border)]">Active Models</h3>
+          <div class="space-y-3 text-xs">
+            <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-subtle)]">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-[var(--ink)]">v1.2-ensemble (Active)</span>
+                <span class="badge-pill badge-approved text-[10px]">96.8% ACC</span>
+              </div>
+              <p class="text-[var(--muted)]">Gradient Boosted + Velocity Rules</p>
+            </div>
+            <div class="p-3 rounded-xl border border-[var(--border)] bg-[var(--surface-subtle)]">
+              <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-[var(--ink)]">v1.1-baseline</span>
+                <span class="badge-pill badge-approved text-[10px]">94.1% ACC</span>
+              </div>
+              <p class="text-[var(--muted)]">Logistic Regression with Rule Filter</p>
+            </div>
+          </div>
+          <button onclick="triggerRetune()" class="btn-primary text-xs w-full justify-center">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Retrain on New Cases</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. TAB: CONFIGURATION -->
+    <div id="admin-tab-config" class="space-y-6 hidden">
+      <div class="fs-card p-6">
+        <span class="fs-eyebrow">Engine Calibration</span>
+        <h2 class="text-2xl font-bold text-[var(--ink)] mt-0.5">Detection Thresholds & Weights</h2>
+        <p class="text-xs text-[var(--muted)] mt-1">Configure automated hold/block cutoffs, velocity limits, and multi-factor weightings.</p>
+      </div>
+
+      <div class="fs-card max-w-2xl">
+        <form onsubmit="handleConfigSave(event)" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-[var(--ink)] mb-1">Hold Threshold (Score ≥ Hold)</label>
+              <input type="number" step="0.01" min="0" max="1" value="0.40" id="cfg-hold" class="w-full bg-[var(--surface-subtle)] border border-[var(--border)] rounded-xl py-2 px-3 text-xs font-mono font-bold text-[var(--ink)]"/>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[var(--ink)] mb-1">Block Threshold (Score ≥ Block)</label>
+              <input type="number" step="0.01" min="0" max="1" value="0.70" id="cfg-block" class="w-full bg-[var(--surface-subtle)] border border-[var(--border)] rounded-xl py-2 px-3 text-xs font-mono font-bold text-[var(--ink)]"/>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[var(--ink)] mb-1">High Amount Trigger (INR)</label>
+            <input type="number" value="50000" id="cfg-amount" class="w-full bg-[var(--surface-subtle)] border border-[var(--border)] rounded-xl py-2 px-3 text-xs font-mono font-bold text-[var(--ink)]"/>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-[var(--ink)] mb-1">Max Velocity (Transactions per Hour)</label>
+            <input type="number" value="5" id="cfg-vel" class="w-full bg-[var(--surface-subtle)] border border-[var(--border)] rounded-xl py-2 px-3 text-xs font-mono font-bold text-[var(--ink)]"/>
+          </div>
+
+          <button type="submit" class="btn-primary text-xs py-2.5 px-5">Save Engine Configuration</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  let adminCases = [
+    { id: 201, user: 'aditi@example.com', merchant: 'CryptoEx Global', amount: 89000.00, score: 0.89, status: 'OPEN', reason: 'High-risk offshore crypto gateway' },
+    { id: 202, user: 'rahul.s@fraudshield.io', merchant: 'Luxury Watches Paris', amount: 145000.00, score: 0.94, status: 'OPEN', reason: 'Impossible location hop (Paris to Mumbai in 25 min)' },
+    { id: 203, user: 'priya.k@gmail.com', merchant: 'Electronics MegaStore', amount: 38400.00, score: 0.62, status: 'OPEN', reason: 'Unusual midnight transaction on new device' },
+    { id: 204, user: 'demo@fraudshield.io', merchant: 'Apple Store Mumbai', amount: 124900.00, score: 0.88, status: 'CONFIRMED_FRAUD', reason: 'Cardholder confirmed unapproved purchase' },
+    { id: 205, user: 'demo@fraudshield.io', merchant: 'MakeMyTrip', amount: 18200.00, score: 0.35, status: 'FALSE_POSITIVE', reason: 'Cardholder verified airline booking' }
+  ];
+
+  function renderAdminCases() {
+    const tbody = document.getElementById('admin-cases-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = adminCases.map(c => {
+      const badgeClass = c.status === 'OPEN' ? 'badge-flagged' : (c.status === 'CONFIRMED_FRAUD' ? 'badge-blocked' : 'badge-approved');
+      const scorePct = Math.round(c.score * 100);
+      return `
+        <tr class="hover:bg-[var(--surface-subtle)] transition">
+          <td class="py-3.5 px-4 sm:px-6 font-mono font-bold text-[var(--ink)]">#${c.id}</td>
+          <td class="py-3.5 px-4 font-medium">${c.user}</td>
+          <td class="py-3.5 px-4">${c.merchant}</td>
+          <td class="py-3.5 px-4 text-right font-mono font-bold">₹${Number(c.amount).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+          <td class="py-3.5 px-4">
+            <span class="font-mono font-bold ${scorePct >= 70 ? 'text-[var(--accent)]' : 'text-[var(--warning)]'}">${scorePct}%</span>
+          </td>
+          <td class="py-3.5 px-4"><span class="badge-pill text-[11px] ${badgeClass}">${c.status}</span></td>
+          <td class="py-3.5 px-4 sm:px-6 text-right">
+            ${c.status === 'OPEN' ? `
+              <div class="flex items-center justify-end gap-1.5">
+                <button onclick="resolveCase(${c.id}, 'CONFIRMED_FRAUD')" class="btn-secondary text-[11px] py-1 px-2.5 text-[var(--accent)]">Fraud</button>
+                <button onclick="resolveCase(${c.id}, 'FALSE_POSITIVE')" class="btn-secondary text-[11px] py-1 px-2.5 text-[var(--positive)]">Clear</button>
+              </div>
+            ` : `<span class="text-[11px] text-[var(--muted)]">Resolved</span>`}
+          </td>
+        </tr>
+      `;
+    }).join('');
+    lucide.createIcons();
+
+    const openCount = adminCases.filter(c => c.status === 'OPEN').length;
+    const badge = document.getElementById('admin-open-cases-badge');
+    if (badge) badge.textContent = openCount;
+  }
+
+  function resolveCase(id, status) {
+    const c = adminCases.find(item => item.id === id);
+    if (c) c.status = status;
+    renderAdminCases();
+    showToast(`Case #${id} triaged as ${status}`, status === 'CONFIRMED_FRAUD' ? 'error' : 'success');
+  }
+
+  function switchAdminTab(tabKey) {
+    ['dashboard', 'reports', 'algorithms', 'config'].forEach(k => {
+      document.getElementById('admin-tab-' + k)?.classList.add('hidden');
+      document.getElementById('admin-nav-' + k)?.classList.remove('active');
+    });
+    document.getElementById('admin-tab-' + tabKey)?.classList.remove('hidden');
+    document.getElementById('admin-nav-' + tabKey)?.classList.add('active');
+    closeSidebarDrawer();
+    lucide.createIcons();
+  }
+
+  function showToast(msg, type = 'success') {
+    const c = document.getElementById('toast-container');
+    if (!c) return;
+    const t = document.createElement('div');
+    t.className = 'fs-toast';
+    t.innerHTML = `<i data-lucide="info" class="w-4 h-4 text-[var(--accent)]"></i><span>${msg}</span>`;
+    c.appendChild(t);
+    lucide.createIcons();
+    setTimeout(() => t.remove(), 3500);
+  }
+
+  function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('fs_theme', isDark ? 'dark' : 'light');
+  }
+  function toggleSidebarCollapse() {
+    document.getElementById('app-sidebar')?.classList.toggle('collapsed');
+    document.body.classList.toggle('sidebar-is-collapsed');
+  }
+  function openSidebarDrawer() {
+    document.getElementById('app-sidebar')?.classList.add('drawer-open');
+    document.getElementById('sidebar-backdrop')?.classList.remove('hidden');
+  }
+  function closeSidebarDrawer() {
+    document.getElementById('app-sidebar')?.classList.remove('drawer-open');
+    document.getElementById('sidebar-backdrop')?.classList.add('hidden');
+  }
+
+  function triggerRetune() {
+    showToast('Retraining algorithm weights on recent cases... Complete! Accuracy: 97.1%', 'success');
+  }
+  function handleConfigSave(e) {
+    e.preventDefault();
+    showToast('Detection thresholds and weights saved successfully', 'success');
+  }
+  function exportReportsCsv() {
+    showToast('Investigation reports exported to CSV', 'success');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    if (localStorage.getItem('fs_theme') === 'dark') document.body.classList.add('dark-mode');
+    renderAdminCases();
+
+    // Render Admin Charts
+    const tCtx = document.getElementById('adminTrendChart');
+    if (tCtx) {
+      new Chart(tCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+          datasets: [
+            { label: 'Cleared Volume (₹ Lakh)', data: [42, 58, 65, 71, 84, 92], backgroundColor: 'rgba(30, 123, 58, 0.65)', borderRadius: 6 },
+            { label: 'Fraud Volume (₹ Lakh)', data: [1.2, 0.8, 1.5, 0.9, 2.1, 1.1], backgroundColor: 'rgba(192, 48, 43, 0.75)', borderRadius: 6 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+
+    const dCtx = document.getElementById('adminDonutChart');
+    if (dCtx) {
+      new Chart(dCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['High Amount', 'Velocity Burst', 'Geo Hop', 'Unknown Device'],
+          datasets: [{
+            data: [45, 25, 20, 10],
+            backgroundColor: ['#C0302B', '#D98A00', '#2F6FB5', '#6B6B70']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+
+    const aCtx = document.getElementById('algoChart');
+    if (aCtx) {
+      new Chart(aCtx, {
+        type: 'line',
+        data: {
+          labels: ['v1.0-alpha', 'v1.0-beta', 'v1.1-release', 'v1.2-ensemble'],
+          datasets: [{
+            label: 'Accuracy (%)',
+            data: [88.5, 91.2, 94.1, 96.8],
+            borderColor: '#1E7B3A',
+            backgroundColor: 'rgba(30, 123, 58, 0.1)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+      });
+    }
+  });
+</script>
+</body>
+</html>
+

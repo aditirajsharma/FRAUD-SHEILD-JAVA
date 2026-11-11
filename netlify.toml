@@ -1,0 +1,64 @@
+# Netlify Configuration for FraudShield AI Platform
+
+[build]
+  # Publish the repository root containing index.html, login.html, register.html, admin.html, 404.html
+  publish = "."
+  # Disable unnecessary server build steps on Netlify static hosting
+  command = "echo 'FraudShield static build ready'"
+
+# Clean URL Rewrites and Path Redirects
+[[redirects]]
+  from = "/dashboard/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/user/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/register.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+# Catch-all custom 404
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404
+
+# Security and Cache Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
